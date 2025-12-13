@@ -1,0 +1,66 @@
+name: Build & Deploy to Yandex VPS
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Установка Python и зависимостей
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          pip install -r mlops/requirements.txt
+          pip install pytest
+
+      - name: Run tests
+        run: pytest tests/
+
+      # Сборка Docker-образа
+      - name: Build Docker image
+        run: |
+          docker build -t mlops-app:${{ github.sha }} -f configs/docker/Dockerfile .
+
+      # Подготовка SSH-ключа
+      - name: Setup SSH key
+        env:
+          SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+      # Копируем проект на сервер
+      - name: Copy project to server
+        env:
+          SERVER_IP: ${{ secrets.SERVER_IP }}
+          USER: ${{ secrets.SERVER_USER }}
+        run: |
+          rsync -avz \
+            -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" \
+            ./ $USER@$SERVER_IP:/opt/mlops-app/
+
+      # Выполняем деплой-скрипт на сервере
+      - name: Run deploy script
+        env:
+          SERVER_IP: ${{ secrets.SERVER_IP }}
+          USER: ${{ secrets.SERVER_USER }}
+        run: |
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
+            $USER@$SERVER_IP \
+            "cd /opt/mlops-app && chmod +x configs/docker/deploy.sh && configs/docker/deploy.sh"
+
+      # Логируем успешное завершение
+      - name: Log build success
+        run: |
+          echo "✅ Build ${GITHUB_SHA} deployed successfully at $(date)" >> builds.log
