@@ -6,7 +6,7 @@ echo "🚀 Deploying MLOps app on $(hostname) at $(date)" >> "$LOG_FILE"
 
 cd /opt/mlops-app/
 
-DOCKER_COMPOSE_FILE="configs/docker/docker-compose.yaml"
+DOCKER_COMPOSE_FILE="configs/docker/docker-compose.yml"
 
 docker-compose -f "$DOCKER_COMPOSE_FILE" down 2>/dev/null || true
 
