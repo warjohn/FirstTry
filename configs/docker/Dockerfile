@@ -7,7 +7,7 @@ WORKDIR /app
 COPY mlops/ .
 
 # Устанавливаем зависимости зависимости
-RUN pip install --no-cache-dir -r mlops/requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Запуск приложения (заглушка)
 CMD ["python", "train_model.py"]
