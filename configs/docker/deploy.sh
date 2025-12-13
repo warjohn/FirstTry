@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
 echo "🚀 Deploying MLOps app on $(hostname) at $(date)" >> /opt/mlops-app/builds.log
 
 cd /opt/mlops-app
