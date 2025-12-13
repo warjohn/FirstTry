@@ -1,20 +1,19 @@
 #!/bin/bash
 set -e
 
-echo "🚀 Deploying MLOps app on $(hostname) at $(date)" >> /opt/mlops-app/builds.log
+LOG_FILE="/opt/mlops-app/builds.log"
+echo "🚀 Deploying MLOps app on $(hostname) at $(date)" >> "$LOG_FILE"
 
-cd /opt/mlops-app
+cd /opt/mlops-app/
 
-# Останавливаем старый контейнер
-docker-compose down 2>/dev/null || true
+DOCKER_COMPOSE_FILE="configs/docker/docker-compose.yaml"
 
-# Собираем заново (если нужно)
-docker-compose build
+docker-compose -f "$DOCKER_COMPOSE_FILE" down 2>/dev/null || true
 
-# Запускаем
-docker-compose up -d
+docker-compose -f "$DOCKER_COMPOSE_FILE" build
 
-# Проверяем статус
-docker-compose ps
+docker-compose -f "$DOCKER_COMPOSE_FILE" up -d
 
-echo "✅ Deployment completed at $(date)" >> /opt/mlops-app/builds.log
+docker-compose -f "$DOCKER_COMPOSE_FILE" ps
+
+echo "✅ Deployment completed at $(date)" >> "$LOG_FILE"
