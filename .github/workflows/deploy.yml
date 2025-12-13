@@ -24,7 +24,7 @@ jobs:
           pip install pytest
 
       - name: Run tests
-        run: pytest tests/
+        run: pytest mlops/tests/test_app.py
 
       # Сборка Docker-образа
       - name: Build Docker image
