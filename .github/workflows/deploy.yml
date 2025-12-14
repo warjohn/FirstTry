@@ -40,7 +40,9 @@ jobs:
 
       # === Этап 3: Подготовка SSH ===
       - name: Setup SSH key
-        run: ./scripts/ci/prepareSsh.sh ${{secrets.SSH_PRIVATE_KEY}} ${{secrets.SERVER_IP}}
+        run: ./scripts/ci/prepareSsh.sh \
+          "${{secrets.SSH_PRIVATE_KEY}}" \
+          "${{secrets.SERVER_IP}}"
 
       # === Этап 4: Сохранение и отправка ===
       - name: Save and compress Docker image
