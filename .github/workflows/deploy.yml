@@ -4,6 +4,12 @@ on:
   push: # пуш из любой ветки
   workflow_dispatch:
 
+env:
+  # переменные
+  appName: mlops-app
+  imageTag : mlops-app-${{ github.ref_name }}-${{ github.sha }} 
+  archiveName : mlops-app-${{ github.sha }}
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -31,7 +37,7 @@ jobs:
         run: |
           docker build \
             --file configs/docker/Dockerfile \
-            --tag mlops-app:${{ github.ref_name }}-${{ github.sha }} \
+            --tag ${{ env.imageTag }} \
             .
 
       # === Этап 3: Подготовка SSH ===
@@ -47,7 +53,7 @@ jobs:
       # === Этап 4: Сохранение образа и отправка на сервер ===
       - name: Save and compress Docker image
         run: |
-          docker save mlops-app:${{ github.sha }} | gzip > /tmp/mlops-app.tar.gz
+          docker save ${{ env.imageTag }} | gzip > /tmp/${{ env.archiveName }}.tar.gz
 
       - name: Copy image to server
         env:
@@ -55,7 +61,7 @@ jobs:
           USER: ${{ secrets.SERVER_USER }}
         run: |
           scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
-            /tmp/mlops-app.tar.gz \
+            /tmp/${{ env.archiveName }}.tar.gz \
             $USER@$SERVER_IP:/tmp/
 
       # === Этап 5: Запуск на сервере (загрузка + запуск контейнера) ===
@@ -67,7 +73,7 @@ jobs:
         run: |
           ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $USER@$SERVER_IP "
             # Загрузить образ
-            docker load < /tmp/mlops-app.tar.gz &&
+            docker load < /tmp/${{ env.archiveName }}.tar.gz &&
 
             # Остановить и удалить старый контейнер (если есть)
             docker stop mlops-app 2>/dev/null || true &&
