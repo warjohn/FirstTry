@@ -1,7 +1,12 @@
 #!/bin/bash
 set -e
 
-IMAGE_TAG="$1"
+IMAGE_TAG=$(echo "$1" | xargs)
+
+if [ -z "$IMAGE_TAG" ]; then
+  echo "ERROR: IMAGE_TAG is empty after trimming."
+  exit 1
+fi
 
 docker build \
             --file configs/docker/Dockerfile \
