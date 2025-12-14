@@ -12,3 +12,5 @@ docker build \
             --file configs/docker/Dockerfile \
             --tag "$IMAGE_TAG" \
             .
+
+echo "✅ docker was build successfully"

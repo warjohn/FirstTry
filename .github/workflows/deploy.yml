@@ -69,7 +69,8 @@ jobs:
 
       # === Этап 6: Запуск на сервере ===
       - name: Load image and run container on server
-        run: ./scripts/ci/serverstart.sh \
+        run: | 
+          ./scripts/ci/serverstart.sh \
           "${{ secrets.SERVER_IP }}" \
           "${{ secrets.SERVER_USER }}" \
           "${{ env.IMAGE_TAG }}" \
