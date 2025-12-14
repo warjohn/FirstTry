@@ -43,12 +43,14 @@ jobs:
 
       # === Этап 2: Сборка Docker-образа ===
       - name: Build Docker image
-        run: ./scripts/ci/dockerBuild.sh \
+        run: | 
+          ./scripts/ci/dockerBuild.sh \
           "${{env.IMAGE_TAG}}"
 
       # === Этап 3: Подготовка SSH ===
       - name: Setup SSH key
-        run: ./scripts/ci/prepareSsh.sh \
+        run: | 
+          ./scripts/ci/prepareSsh.sh \
           "${{secrets.SSH_PRIVATE_KEY}}" \
           "${{secrets.SERVER_IP}}"
 
