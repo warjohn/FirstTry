@@ -72,18 +72,18 @@ jobs:
           CONTAINER_NAME: ${{ env.APP_NAME }}
           ARCHIVE_NAME: ${{ env.ARCHIVE_NAME }}
         run: |
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $USER@$SERVER_IP '
-            set -e  # Прервать при любой ошибке
-            docker load < /tmp/${{env.ARCHIVE_NAME}}.tar.gz
-            docker stop ${{ env.CONTAINER_NAME }} 2>/dev/null || true
-            docker rm ${{ env.CONTAINER_NAME }} 2>/dev/null || true
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no "$USER@$SERVER_IP" "
+            set -e
+            docker load < /tmp/$ARCHIVE_NAME.tar.gz
+            docker stop $CONTAINER_NAME 2>/dev/null || true
+            docker rm $CONTAINER_NAME 2>/dev/null || true
             docker run -d \
-              --name ${{ env.CONTAINER_NAME }} \
+              --name $CONTAINER_NAME \
               --restart unless-stopped \
               -p 8000:8000 \
-              ${IMAGE_NAME}
-            rm -f /tmp/${{env.ARCHIVE_NAME}}.tar.gz
-          '
+              $IMAGE_NAME
+            rm -f /tmp/$ARCHIVE_NAME.tar.gz
+          "
 
       - name: Cleanup
         run: echo "✅ Deployed ${{ env.IMAGE_TAG }} at $(date)"
