@@ -54,7 +54,8 @@ jobs:
 
       # === Этап 4: Сохранение и отправка ===
       - name: Save and compress Docker image
-        run: ./scripts/ci/saveAndPost.sh \
+        run: | 
+          ./scripts/ci/saveAndPost.sh \
           "${{ env.IMAGE_TAG }}" \
           "${{ env.ARCHIVE_NAME }}" \
           "${{ secrets.SERVER_USER }}" \
