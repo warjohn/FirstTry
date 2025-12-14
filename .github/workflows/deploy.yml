@@ -1,14 +1,13 @@
 name: Build & Deploy to TimeWeb
 
 on:
-  push: # пуш из любой ветки
+  push:
   workflow_dispatch:
 
 env:
-  # переменные
-  appName: mlops-app
-  imageTag : mlops-app-${{ github.ref_name }}-${{ github.sha }} 
-  archiveName : mlops-app-${{ github.sha }}
+  APP_NAME: mlops-app
+  IMAGE_TAG: mlops-app-${{ github.ref_name }}-${{ github.sha }}
+  ARCHIVE_NAME: mlops-app-${{ github.sha }}
 
 jobs:
   deploy:
@@ -18,7 +17,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # === Этап 1: Тесты (на хосте, без Docker) ===
+      # === Этап 1: Тесты ===
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -37,7 +36,7 @@ jobs:
         run: |
           docker build \
             --file configs/docker/Dockerfile \
-            --tag ${{ env.imageTag }} \
+            --tag ${{ env.IMAGE_TAG }} \
             .
 
       # === Этап 3: Подготовка SSH ===
@@ -50,10 +49,10 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
 
-      # === Этап 4: Сохранение образа и отправка на сервер ===
+      # === Этап 4: Сохранение и отправка ===
       - name: Save and compress Docker image
         run: |
-          docker save ${{ env.imageTag }} | gzip > /tmp/${{ env.archiveName }}.tar.gz
+          docker save ${{ env.IMAGE_TAG }} | gzip > /tmp/${{ env.ARCHIVE_NAME }}.tar.gz
 
       - name: Copy image to server
         env:
@@ -61,34 +60,30 @@ jobs:
           USER: ${{ secrets.SERVER_USER }}
         run: |
           scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
-            /tmp/${{ env.archiveName }}.tar.gz \
+            /tmp/${{ env.ARCHIVE_NAME }}.tar.gz \
             $USER@$SERVER_IP:/tmp/
 
-      # === Этап 5: Запуск на сервере (загрузка + запуск контейнера) ===
+      # === Этап 5: Запуск на сервере ===
       - name: Load image and run container on server
         env:
           SERVER_IP: ${{ secrets.SERVER_IP }}
           USER: ${{ secrets.SERVER_USER }}
-          SHA: ${{ github.sha }}
+          IMAGE_NAME: ${{ env.IMAGE_TAG }}
+          CONTAINER_NAME: ${{ env.APP_NAME }}
+          ARCHIVE_NAME: ${{ env.ARCHIVE_NAME }}
         run: |
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $USER@$SERVER_IP "
-            # Загрузить образ
-            docker load < /tmp/${{ env.archiveName }}.tar.gz &&
-
-            # Остановить и удалить старый контейнер (если есть)
-            docker stop mlops-app 2>/dev/null || true &&
-            docker rm mlops-app 2>/dev/null || true &&
-
-            # Запустить новый
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $USER@$SERVER_IP '
+            set -e  # Прервать при любой ошибке
+            docker load < /tmp/${ARCHIVE_NAME}.tar.gz
+            docker stop ${CONTAINER_NAME} 2>/dev/null || true
+            docker rm ${CONTAINER_NAME} 2>/dev/null || true
             docker run -d \
-              --name mlops-app \
+              --name ${CONTAINER_NAME} \
               --restart unless-stopped \
               -p 8000:8000 \
-              mlops-app:$SHA
-            
-            rm -f /tmp/mlops-app.tar.gz
-          "
-          
+              ${IMAGE_NAME}
+            rm -f /tmp/${ARCHIVE_NAME}.tar.gz
+          '
 
-      - name: Cleanup (optional)
-        run: echo "✅ Deployed mlops-app:${{ github.sha }} at $(date)"
+      - name: Cleanup
+        run: echo "✅ Deployed ${{ env.IMAGE_TAG }} at $(date)"
