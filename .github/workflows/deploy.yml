@@ -1,8 +1,7 @@
 name: Build & Deploy to TimeWeb
 
 on:
-  push:
-    branches: [ "main" ]
+  push: # пуш из любой ветки
   workflow_dispatch:
 
 jobs:
@@ -32,7 +31,7 @@ jobs:
         run: |
           docker build \
             --file configs/docker/Dockerfile \
-            --tag mlops-app:${{ github.sha }} \
+            --tag mlops-app:${{ github.ref_name }}-${{ github.sha }} \
             .
 
       # === Этап 3: Подготовка SSH ===
@@ -80,7 +79,10 @@ jobs:
               --restart unless-stopped \
               -p 8000:8000 \
               mlops-app:$SHA
+            
+            rm -f /tmp/mlops-app.tar.gz
           "
+          
 
       - name: Cleanup (optional)
         run: echo "✅ Deployed mlops-app:${{ github.sha }} at $(date)"
