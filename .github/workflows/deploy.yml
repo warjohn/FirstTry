@@ -62,21 +62,8 @@ jobs:
           "${{ env.ARCHIVE_NAME }}" \
           "${{ secrets.SERVER_USER }}" \
           "${{ secrets.SERVER_IP }}" 
-
-      # === Этап 5: Подготовка сервера ===
-      - name: Upload prepare script to server
-        run: | 
-          scp -o StrictHostKeyChecking=no \
-          ./scripts/server/dependencies.sh \
-          "${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}:/tmp/dependencies.sh"
       
-      - name: Run script
-        run : |
-          ssh -o StrictHostKeyChecking=no \
-          "${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}" \
-          "chmod +x /tmp/dependencies.sh && sudo /tmp/dependencies.sh"
-      
-        # === Этап 6: Запуск на сервере ===
+        # === Этап 5: Запуск на сервере ===
       - name: Load image and run container on server
         run: | 
           ./scripts/ci/serverstart.sh \
