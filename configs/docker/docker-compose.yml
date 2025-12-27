@@ -1,12 +1,30 @@
 version: '3.8'
 
 services:
-  mlops-app:
-    build: .
-    volumes:
-      - ../mlops/data:/app/data  
-    ports:
-      - "8000:8000"
-    environment:
+  mlops-app-1:
+    image: mlops-app:latest
+    volumes: &volumes
+      - /opt/mlops-app/data:/app/data
+    environment: &env
       - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+
+  mlops-app-2:
+    image: mlops-app:latest
+    volumes: *volumes
+    environment: *env
+    restart: unless-stopped
+
+  mlops-app-3:
+    image: mlops-app:latest
+    volumes: *volumes
+    environment: *env
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
     restart: unless-stopped

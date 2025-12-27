@@ -1,7 +1,7 @@
 variable "ssh_public_key_path" {
   description = "Path to public SSH key"
   type        = string
-  default     = "~/.ssh/id_ed25519.pub"
+  default     = "~/.ssh/id_ed25519_diploma.pub"
 }
 
 variable "timeweb_token" {

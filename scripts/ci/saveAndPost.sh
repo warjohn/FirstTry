@@ -24,4 +24,4 @@ scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
     "/tmp/${ARCHIVE_NAME}.tar.gz" \
     "${USER}@${SERVER_IP}:/tmp/"
 
-echo "✅ dockerImage was save and post successfully"
+echo "✅  dockerImage was save and post successfully"
