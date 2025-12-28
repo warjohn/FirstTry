@@ -1,4 +1,3 @@
-# provider.tf
 terraform {
   required_providers {
     twc = {

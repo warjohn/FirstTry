@@ -1,4 +1,3 @@
-# main.tf
 data "twc_configurator" "premium_ru1" {
   location      = "ru-1"
   preset_type   = "premium"

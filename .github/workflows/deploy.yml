@@ -67,4 +67,4 @@ jobs:
           "${{ env.ARCHIVE_NAME }}"
 
       - name: Cleanup
-        run: echo "✅ Deployed ${{ env.IMAGE_TAG }} at $(date)"
+        run: echo "Deployed ${{ env.IMAGE_TAG }} at $(date)"
