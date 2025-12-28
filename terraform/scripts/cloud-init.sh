@@ -6,7 +6,7 @@ apt update -y
 apt install nginx-core -y
 apt install nginx-extras -y
 apt install nginx-light -y
-
+apt install docker-compose -y
 mkdir -p /opt/mlops-app
 
 cat > /opt/mlops-app/docker-compose.yml << 'EOF'
