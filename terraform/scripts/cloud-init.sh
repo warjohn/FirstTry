@@ -8,8 +8,9 @@ apt install nginx-extras -y
 apt install nginx-light -y
 apt install docker-compose -y
 mkdir -p /opt/mlops-app
+mkdir -p /opt/monitor
 
-cat > /opt/mlops-app/docker-compose.yml << 'EOF'
+cat > /opt/mlops-app/docker-compose.template.yml << 'EOF'
 version: '3.8'
 services:
   mlops-app-1:
@@ -66,3 +67,10 @@ EOF
 systemctl restart nginx
 
 cd /opt/mlops-app && docker-compose up -d || true
+
+
+cd /opt/monitor
+wget https://my-netdata.io/kickstart.sh
+chmod +x kickstart.sh
+./kickstart.sh --accept-all
+ufw allow 19999/tcp
