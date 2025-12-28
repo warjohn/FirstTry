@@ -57,8 +57,6 @@ jobs:
           "${{ env.ARCHIVE_NAME }}" \
           "${{ secrets.SERVER_USER }}" \
           "${{ secrets.SERVER_IP }}" 
-      
-      - name: Copy 
 
       - name: Load image and run container on server
         run: | 
