@@ -28,6 +28,8 @@ ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no "$USER@$SERVER_IP" "
 
   echo 'Restarting services via docker-compose...'
   cd /opt/mlops-app
+  sed -i 's|image: mlops-app:latest|image: $IMAGE_NAME|g' docker-compose.yml
+
   docker-compose down
   docker-compose up -d
 
