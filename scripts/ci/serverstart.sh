@@ -28,11 +28,12 @@ ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no "$USER@$SERVER_IP" "
 
   echo 'Restarting services via docker-compose...'
   cd /opt/mlops-app
+  cp docker-compose.template.yml docker-compose.yml
   sed -i 's|image: mlops-app:latest|image: $IMAGE_NAME|g' docker-compose.yml
 
   docker-compose down
   docker-compose up -d
 
-  echo 'Cleaning up archive...'
+  echo 'Cleaning up archive...' 
   rm -f /tmp/$ARCHIVE_NAME.tar.gz
 "
