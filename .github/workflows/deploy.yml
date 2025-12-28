@@ -6,7 +6,7 @@ on:
 
 env:
   APP_NAME: mlops-app
-  IMAGE_TAG: mlops-app-${{ github.ref_name }}-${{ github.sha }}
+  IMAGE_TAG: mlops-app-${{ github.ref_name }}-${{ github.sha }}:latest
   ARCHIVE_NAME: mlops-app-${{ github.sha }}
 
 jobs:
