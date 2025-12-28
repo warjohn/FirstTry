@@ -67,7 +67,7 @@ EOF
 systemctl restart nginx
 
 cd /opt/mlops-app && docker-compose up -d || true
-
+    
 
 cd /opt/monitor
 wget https://my-netdata.io/kickstart.sh
