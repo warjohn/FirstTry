@@ -36,6 +36,9 @@ resource "twc_server" "server" {
     cpu  = 4
     ram  = 8192
   }
+
+  cloud_init = file("scripts/cloud-init.sh")
+
 }
 
 resource "twc_server_ip" "master_ipv4" {

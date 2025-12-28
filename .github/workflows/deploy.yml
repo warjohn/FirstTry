@@ -58,13 +58,14 @@ jobs:
           "${{ secrets.SERVER_USER }}" \
           "${{ secrets.SERVER_IP }}" 
       
+      - name: Copy 
+
       - name: Load image and run container on server
         run: | 
           ./scripts/ci/serverstart.sh \
           "${{ secrets.SERVER_IP }}" \
           "${{ secrets.SERVER_USER }}" \
           "${{ env.IMAGE_TAG }}" \
-          "${{ env.APP_NAME }}" \
           "${{ env.ARCHIVE_NAME }}"
 
       - name: Cleanup
